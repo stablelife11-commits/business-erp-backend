@@ -34,4 +34,59 @@ public class ProductService {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
     }
+
+    // Update Product
+    public Product updateProduct(Long id, Product updatedProduct) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        // Check duplicate product code
+        if (!product.getProductCode().equals(updatedProduct.getProductCode())
+                && productRepository.existsByProductCode(updatedProduct.getProductCode())) {
+            throw new RuntimeException("Product code already exists");
+        }
+
+        product.setProductName(updatedProduct.getProductName());
+        product.setProductCode(updatedProduct.getProductCode());
+        product.setBrand(updatedProduct.getBrand());
+        product.setCategory(updatedProduct.getCategory());
+        product.setSize(updatedProduct.getSize());
+        product.setColor(updatedProduct.getColor());
+        product.setPurchasePrice(updatedProduct.getPurchasePrice());
+        product.setSalePrice(updatedProduct.getSalePrice());
+        product.setOpeningStock(updatedProduct.getOpeningStock());
+        product.setCurrentStock(updatedProduct.getCurrentStock());
+        product.setStatus(updatedProduct.getStatus());
+
+        return productRepository.save(product);
+    }
+
+    // Delete Product
+    public void deleteProduct(Long id) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        productRepository.delete(product);
+    }
+
+    // Search By Product Code
+    public Product getProductByCode(String productCode) {
+
+        return productRepository.findByProductCode(productCode)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+    }
+
+    // Search By Product Name
+    public List<Product> searchByProductName(String productName) {
+
+        return productRepository.findByProductNameContainingIgnoreCase(productName);
+    }
+
+    // Search By Brand
+    public List<Product> searchByBrand(String brand) {
+
+        return productRepository.findByBrandContainingIgnoreCase(brand);
+    }
 }
