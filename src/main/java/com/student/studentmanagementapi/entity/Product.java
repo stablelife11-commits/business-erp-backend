@@ -1,0 +1,67 @@
+package com.student.studentmanagementapi.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@Entity
+@Table(
+        name = "products",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "product_code")
+        }
+)
+public class Product {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank(message = "Product name is required")
+    @Column(name = "product_name", nullable = false, length = 100)
+    private String productName;
+
+    @NotBlank(message = "Product code is required")
+    @Column(name = "product_code", nullable = false, unique = true, length = 30)
+    private String productCode;
+
+    @NotBlank(message = "Brand is required")
+    @Column(nullable = false, length = 50)
+    private String brand;
+
+    @NotBlank(message = "Category is required")
+    @Column(nullable = false, length = 50)
+    private String category;
+
+    @Column(length = 20)
+    private String size;
+
+    @Column(length = 30)
+    private String color;
+
+    @DecimalMin(value = "0.0", message = "Purchase price must be greater than or equal to 0")
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal purchasePrice;
+
+    @DecimalMin(value = "0.0", message = "Sale price must be greater than or equal to 0")
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal salePrice;
+
+    @Min(value = 0, message = "Opening stock cannot be negative")
+    @Column(nullable = false)
+    private Integer openingStock = 0;
+
+    @Min(value = 0, message = "Current stock cannot be negative")
+    @Column(nullable = false)
+    private Integer currentStock = 0;
+
+    @Column(nullable = false)
+    private Boolean status = true;
+}

@@ -1,0 +1,20 @@
+package com.student.studentmanagementapi.repository;
+
+import com.student.studentmanagementapi.entity.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long> {
+
+    boolean existsByProductCode(String productCode);
+
+    Optional<Product> findByProductCode(String productCode);
+
+    List<Product> findByProductNameContainingIgnoreCase(String productName);
+
+    List<Product> findByBrandContainingIgnoreCase(String brand);
+}
