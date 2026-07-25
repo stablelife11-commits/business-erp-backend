@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
 public class ProductController {
 
     @Autowired
@@ -73,5 +73,10 @@ public class ProductController {
             @RequestParam String brand) {
 
         return ResponseEntity.ok(productService.searchByBrand(brand));
+    }
+
+    @GetMapping("/low-stock")
+    public List<Product> getLowStockProducts() {
+        return productService.getLowStockProducts();
     }
 }

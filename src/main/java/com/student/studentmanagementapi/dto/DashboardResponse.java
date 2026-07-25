@@ -10,11 +10,15 @@ public class DashboardResponse {
     private long totalPurchases;
     private long totalSales;
 
+
     private BigDecimal totalPurchaseAmount;
     private BigDecimal totalSaleAmount;
 
     private BigDecimal todaySaleAmount;
     private BigDecimal todayPurchaseAmount;
+
+    private long todaySalesCount;
+    private long todayPurchasesCount;
 
     private long lowStockProducts;
 
@@ -99,5 +103,21 @@ public class DashboardResponse {
 
     public void setLowStockProducts(long lowStockProducts) {
         this.lowStockProducts = lowStockProducts;
+    }
+
+    public long getTodaySalesCount() {
+        return todaySalesCount;
+    }
+
+    public void setTodaySalesCount(long todaySalesCount) {
+        this.todaySalesCount = todaySalesCount;
+    }
+
+    public long getTodayPurchasesCount() {
+        return todayPurchasesCount;
+    }
+
+    public void setTodayPurchasesCount(long todayPurchasesCount) {
+        this.todayPurchasesCount = todayPurchasesCount;
     }
 }

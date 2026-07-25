@@ -39,7 +39,11 @@ public class DashboardService {
         response.setTotalPurchases(purchaseRepository.count());
         response.setTotalSales(saleRepository.count());
 
-        response.setTotalPurchaseAmount(purchaseRepository.getTotalPurchaseAmount());
+        Double totalPurchase = purchaseRepository.getTotalPurchaseAmount();
+
+        response.setTotalPurchaseAmount(
+                BigDecimal.valueOf(totalPurchase)
+        );
         response.setTotalSaleAmount(saleRepository.getTotalSaleAmount());
         response.setLowStockProducts(productRepository.getLowStockProducts());
 
@@ -51,6 +55,14 @@ public class DashboardService {
 
         response.setTodayPurchaseAmount(
                 BigDecimal.valueOf(todayPurchase)
+        );
+
+        response.setTodaySalesCount(
+                saleRepository.countBySaleDate(LocalDate.now())
+        );
+
+        response.setTodayPurchasesCount(
+                purchaseRepository.countByPurchaseDate(LocalDate.now())
         );
 
         return response;

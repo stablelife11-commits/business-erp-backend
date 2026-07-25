@@ -89,4 +89,8 @@ public class ProductService {
 
         return productRepository.findByBrandContainingIgnoreCase(brand);
     }
+
+    public List<Product> getLowStockProducts() {
+        return productRepository.findByCurrentStockLessThanEqual(10);
+    }
 }

@@ -19,6 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByBrandContainingIgnoreCase(String brand);
 
+    List<Product> findByCurrentStockLessThanEqual(Integer stock);
+
     @Query("SELECT COUNT(p) FROM Product p WHERE p.currentStock <= 10")
     long getLowStockProducts();
 }

@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface SaleRepository extends JpaRepository<Sale, Long> {
@@ -17,6 +18,10 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     Optional<Sale> findBySaleNumber(String saleNumber);
     @Query("SELECT COALESCE(SUM(s.totalAmount), 0) FROM Sale s")
     BigDecimal getTotalSaleAmount();
+
+    long countBySaleDate(LocalDate saleDate);
+
+    List<Sale> findBySaleDateBetween(LocalDate fromDate, LocalDate toDate);
 
     @Query("SELECT COALESCE(SUM(s.totalAmount), 0) FROM Sale s WHERE s.saleDate = :saleDate")
     BigDecimal getTodaySaleAmount(LocalDate saleDate);
