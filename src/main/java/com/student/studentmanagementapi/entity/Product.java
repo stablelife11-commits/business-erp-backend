@@ -54,11 +54,11 @@ public class Product {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal salePrice;
 
-    @Min(value = 0, message = "Opening stock cannot be negative")
+
     @Column(nullable = false)
     private Integer openingStock = 0;
 
-    @Min(value = 0, message = "Current stock cannot be negative")
+
     @Column(nullable = false)
     private Integer currentStock = 0;
 
