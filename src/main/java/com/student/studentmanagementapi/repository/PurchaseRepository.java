@@ -31,4 +31,20 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     // Dashboard - Today's Purchase Amount
     @Query("SELECT COALESCE(SUM(p.totalAmount), 0) FROM Purchase p WHERE p.purchaseDate = :purchaseDate")
     Double getTodayPurchaseAmount(LocalDate purchaseDate);
+
+    @Query("""
+SELECT MONTH(p.purchaseDate), COALESCE(SUM(p.totalAmount), 0)
+FROM Purchase p
+GROUP BY MONTH(p.purchaseDate)
+ORDER BY MONTH(p.purchaseDate)
+""")
+    List<Object[]> getMonthlyPurchases();
+
+    @Query("""
+SELECT p.supplier.supplierName, COALESCE(SUM(p.totalAmount), 0)
+FROM Purchase p
+GROUP BY p.supplier.supplierName
+ORDER BY SUM(p.totalAmount) DESC
+""")
+    List<Object[]> getTopSuppliers();
 }

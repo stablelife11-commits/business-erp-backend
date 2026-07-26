@@ -16,6 +16,17 @@ import com.student.studentmanagementapi.repository.PurchaseRepository;
 
 import com.student.studentmanagementapi.dto.ProfitReportResponse;
 
+import com.student.studentmanagementapi.dto.StockReportResponse;
+import com.student.studentmanagementapi.repository.ProductRepository;
+import com.student.studentmanagementapi.entity.Product;
+
+import com.student.studentmanagementapi.dto.MonthlySalesResponse;
+import java.util.ArrayList;
+import com.student.studentmanagementapi.dto.TopSellingProductResponse;
+import com.student.studentmanagementapi.dto.TopCustomerResponse;
+import com.student.studentmanagementapi.dto.MonthlyPurchaseResponse;
+import com.student.studentmanagementapi.dto.TopSupplierResponse;
+
 @Service
 public class ReportService {
 
@@ -24,6 +35,9 @@ public class ReportService {
 
     @Autowired
     private PurchaseRepository purchaseRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     public ReportResponse getSalesReport(LocalDate fromDate, LocalDate toDate) {
 
@@ -113,6 +127,114 @@ public class ReportService {
         response.setTotalPurchaseCost(totalPurchaseCost);
         response.setGrossProfit(grossProfit);
         response.setProfitPercentage(profitPercentage);
+
+        return response;
+    }
+
+    public StockReportResponse getStockReport() {
+
+        StockReportResponse response = new StockReportResponse();
+
+        response.setTotalProducts(productRepository.count());
+
+        response.setTotalStockQuantity(
+                productRepository.getTotalStockQuantity()
+        );
+
+        response.setTotalStockValue(
+                productRepository.getTotalStockValue()
+        );
+
+        return response;
+    }
+
+    public List<MonthlySalesResponse> getMonthlySalesReport() {
+
+        List<Object[]> data = saleRepository.getMonthlySales();
+
+        List<MonthlySalesResponse> response = new ArrayList<>();
+
+        for (Object[] row : data) {
+
+            MonthlySalesResponse item = new MonthlySalesResponse();
+
+            item.setMonth(((Number) row[0]).intValue());
+            item.setTotalSales((BigDecimal) row[1]);
+
+            response.add(item);
+        }
+
+        return response;
+    }
+    public List<TopSellingProductResponse> getTopSellingProducts() {
+
+        List<Object[]> data = saleRepository.getTopSellingProducts();
+
+        List<TopSellingProductResponse> response = new ArrayList<>();
+
+        for (Object[] row : data) {
+
+            TopSellingProductResponse item = new TopSellingProductResponse();
+
+            item.setProductName((String) row[0]);
+            item.setTotalQuantity(((Number) row[1]).longValue());
+
+            response.add(item);
+        }
+
+        return response;
+    }
+    public List<TopCustomerResponse> getTopCustomers() {
+
+        List<Object[]> data = saleRepository.getTopCustomers();
+
+        List<TopCustomerResponse> response = new ArrayList<>();
+
+        for (Object[] row : data) {
+
+            TopCustomerResponse item = new TopCustomerResponse();
+
+            item.setCustomerName((String) row[0]);
+            item.setTotalAmount((BigDecimal) row[1]);
+
+            response.add(item);
+        }
+
+        return response;
+    }
+    public List<MonthlyPurchaseResponse> getMonthlyPurchaseReport() {
+
+        List<Object[]> data = purchaseRepository.getMonthlyPurchases();
+
+        List<MonthlyPurchaseResponse> response = new ArrayList<>();
+
+        for (Object[] row : data) {
+
+            MonthlyPurchaseResponse item = new MonthlyPurchaseResponse();
+
+            item.setMonth(((Number) row[0]).intValue());
+            item.setTotalPurchase(((Number) row[1]).doubleValue());
+
+            response.add(item);
+        }
+
+        return response;
+    }
+    public List<TopSupplierResponse> getTopSuppliers() {
+
+        List<Object[]> data = purchaseRepository.getTopSuppliers();
+
+        List<TopSupplierResponse> response = new ArrayList<>();
+
+        for (Object[] row : data) {
+
+            TopSupplierResponse item = new TopSupplierResponse();
+
+            item.setSupplierName((String) row[0]);
+            item.setTotalPurchase(((Number) row[1]).doubleValue());
+
+            response.add(item);
+        }
 
         return response;
     }

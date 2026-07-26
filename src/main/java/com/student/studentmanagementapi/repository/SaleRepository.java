@@ -25,4 +25,30 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 
     @Query("SELECT COALESCE(SUM(s.totalAmount), 0) FROM Sale s WHERE s.saleDate = :saleDate")
     BigDecimal getTodaySaleAmount(LocalDate saleDate);
+
+
+
+    @Query("""
+SELECT MONTH(s.saleDate), COALESCE(SUM(s.totalAmount), 0)
+FROM Sale s
+GROUP BY MONTH(s.saleDate)
+ORDER BY MONTH(s.saleDate)
+""")
+    List<Object[]> getMonthlySales();
+
+    @Query("""
+SELECT s.productName, SUM(s.quantity)
+FROM Sale s
+GROUP BY s.productName
+ORDER BY SUM(s.quantity) DESC
+""")
+    List<Object[]> getTopSellingProducts();
+
+    @Query("""
+SELECT s.customerName, SUM(s.totalAmount)
+FROM Sale s
+GROUP BY s.customerName
+ORDER BY SUM(s.totalAmount) DESC
+""")
+    List<Object[]> getTopCustomers();
 }

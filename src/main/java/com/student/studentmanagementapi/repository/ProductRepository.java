@@ -23,4 +23,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.currentStock <= 10")
     long getLowStockProducts();
+
+    @Query("SELECT COALESCE(SUM(p.currentStock), 0) FROM Product p")
+    Integer getTotalStockQuantity();
+
+    @Query("SELECT COALESCE(SUM(p.currentStock * p.purchasePrice), 0) FROM Product p")
+    java.math.BigDecimal getTotalStockValue();
 }
