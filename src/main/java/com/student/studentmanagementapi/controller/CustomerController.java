@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/api/customers")
 public class CustomerController {
 
     @Autowired
@@ -49,7 +49,7 @@ public class CustomerController {
 
         customerService.deleteCustomer(id);
 
-        return ResponseEntity.ok("Customer deleted successfully");
+        return ResponseEntity.noContent().build();
     }
 
     // Get Customer By Mobile
