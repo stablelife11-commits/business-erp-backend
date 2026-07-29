@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/purchases")
@@ -23,6 +24,17 @@ public class PurchaseController {
             @Valid @RequestBody PurchaseRequest request) {
 
         return purchaseService.addPurchase(request);
+    }
+    @GetMapping
+    public List<PurchaseResponse> getAllPurchases() {
+
+        return purchaseService.getAllPurchases();
+    }
+
+    @GetMapping("/{id}")
+    public PurchaseResponse getPurchaseById(@PathVariable Long id) {
+
+        return purchaseService.getPurchaseById(id);
     }
 
 }

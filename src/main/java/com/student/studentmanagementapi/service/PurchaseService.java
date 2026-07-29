@@ -207,6 +207,49 @@ public class PurchaseService {
 
         return response;
     }
+    // Get All Purchases
+    public List<PurchaseResponse> getAllPurchases() {
+
+        List<Purchase> purchases = purchaseRepository.findAll();
+
+        List<PurchaseResponse> responseList = new ArrayList<>();
+
+        for (Purchase purchase : purchases) {
+
+            PurchaseResponse response = new PurchaseResponse();
+
+            response.setId(purchase.getId());
+            response.setPurchaseNumber(purchase.getPurchaseNumber());
+            response.setPurchaseDate(purchase.getPurchaseDate());
+            response.setSupplierName(purchase.getSupplier().getSupplierName());
+            response.setInvoiceNumber(purchase.getInvoiceNumber());
+            response.setTotalAmount(purchase.getTotalAmount());
+            response.setStatus(purchase.getStatus());
+
+            responseList.add(response);
+        }
+
+        return responseList;
+    }
+
+    // Get Purchase By ID
+    public PurchaseResponse getPurchaseById(Long id) {
+
+        Purchase purchase = purchaseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Purchase not found"));
+
+        PurchaseResponse response = new PurchaseResponse();
+
+        response.setId(purchase.getId());
+        response.setPurchaseNumber(purchase.getPurchaseNumber());
+        response.setPurchaseDate(purchase.getPurchaseDate());
+        response.setSupplierName(purchase.getSupplier().getSupplierName());
+        response.setInvoiceNumber(purchase.getInvoiceNumber());
+        response.setTotalAmount(purchase.getTotalAmount());
+        response.setStatus(purchase.getStatus());
+
+        return response;
+    }
 
 
 
