@@ -45,11 +45,11 @@ public class SupplierController {
 
     // Delete Supplier
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteSupplier(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSupplier(@PathVariable Long id) {
 
         supplierService.deleteSupplier(id);
 
-        return ResponseEntity.ok("Supplier deleted successfully");
+        return ResponseEntity.noContent().build();
     }
 
     // Search By Mobile
