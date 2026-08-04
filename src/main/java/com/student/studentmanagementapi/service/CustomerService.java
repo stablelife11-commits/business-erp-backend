@@ -28,7 +28,7 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    // Get Customer By Id
+    // Get Customer By I'd
     public Customer getCustomerById(Long id) {
         return customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));

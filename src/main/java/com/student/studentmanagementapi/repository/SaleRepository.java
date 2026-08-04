@@ -51,4 +51,16 @@ GROUP BY s.customerName
 ORDER BY SUM(s.totalAmount) DESC
 """)
     List<Object[]> getTopCustomers();
+
+    @Query("""
+SELECT s.customerName,
+       s.customerMobile,
+       COUNT(s.id),
+       COALESCE(SUM(s.quantity), 0),
+       COALESCE(SUM(s.totalAmount), 0)
+FROM Sale s
+GROUP BY s.customerName, s.customerMobile
+ORDER BY SUM(s.totalAmount) DESC
+""")
+    List<Object[]> getCustomerReport();
 }

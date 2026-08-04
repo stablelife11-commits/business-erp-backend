@@ -3,13 +3,14 @@ package com.student.studentmanagementapi.dto;
 import com.student.studentmanagementapi.entity.Purchase;
 
 import java.util.List;
+import com.student.studentmanagementapi.dto.PurchaseResponse;
 
 public class PurchaseReportResponse {
 
     private long totalBills;
     private int totalQuantity;
     private Double totalPurchase;
-    private List<Purchase> purchases;
+    private List<PurchaseResponse> purchases;
 
     public PurchaseReportResponse() {
     }
@@ -38,11 +39,11 @@ public class PurchaseReportResponse {
         this.totalPurchase = totalPurchase;
     }
 
-    public List<Purchase> getPurchases() {
+    public List<PurchaseResponse> getPurchases() {
         return purchases;
     }
 
-    public void setPurchases(List<Purchase> purchases) {
+    public void setPurchases(List<PurchaseResponse> purchases) {
         this.purchases = purchases;
     }
 }

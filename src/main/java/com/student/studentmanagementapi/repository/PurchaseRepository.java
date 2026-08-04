@@ -47,4 +47,22 @@ GROUP BY p.supplier.supplierName
 ORDER BY SUM(p.totalAmount) DESC
 """)
     List<Object[]> getTopSuppliers();
+    @Query("""
+SELECT p.supplier.supplierName,
+       COUNT(p),
+       COALESCE(SUM(p.totalAmount), 0)
+FROM Purchase p
+GROUP BY p.supplier.supplierName
+ORDER BY SUM(p.totalAmount) DESC
+""")
+    List<Object[]> getSupplierPurchaseSummary();
+
+    @Query("""
+SELECT p.supplier.supplierName,
+       COALESCE(SUM(i.quantity), 0)
+FROM Purchase p
+JOIN p.items i
+GROUP BY p.supplier.supplierName
+""")
+    List<Object[]> getSupplierTotalQuantity();
 }

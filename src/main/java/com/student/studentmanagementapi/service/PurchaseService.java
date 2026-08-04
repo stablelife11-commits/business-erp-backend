@@ -226,6 +226,25 @@ public class PurchaseService {
             response.setTotalAmount(purchase.getTotalAmount());
             response.setStatus(purchase.getStatus());
 
+            List<PurchaseItemResponse> itemResponses = new ArrayList<>();
+
+            List<PurchaseItem> purchaseItems =
+                    purchaseItemRepository.findByPurchaseId(purchase.getId());
+
+            for (PurchaseItem item : purchaseItems) {
+
+                PurchaseItemResponse itemResponse = new PurchaseItemResponse();
+
+                itemResponse.setProductName(item.getProduct().getProductName());
+                itemResponse.setQuantity(item.getQuantity());
+                itemResponse.setPurchasePrice(item.getPurchasePrice());
+                itemResponse.setTotalPrice(item.getTotalPrice());
+
+                itemResponses.add(itemResponse);
+            }
+
+            response.setItems(itemResponses);
+
             responseList.add(response);
         }
 
@@ -247,6 +266,25 @@ public class PurchaseService {
         response.setInvoiceNumber(purchase.getInvoiceNumber());
         response.setTotalAmount(purchase.getTotalAmount());
         response.setStatus(purchase.getStatus());
+
+        List<PurchaseItemResponse> itemResponses = new ArrayList<>();
+
+        List<PurchaseItem> purchaseItems =
+                purchaseItemRepository.findByPurchaseId(purchase.getId());
+
+        for (PurchaseItem item : purchaseItems) {
+
+            PurchaseItemResponse itemResponse = new PurchaseItemResponse();
+
+            itemResponse.setProductName(item.getProduct().getProductName());
+            itemResponse.setQuantity(item.getQuantity());
+            itemResponse.setPurchasePrice(item.getPurchasePrice());
+            itemResponse.setTotalPrice(item.getTotalPrice());
+
+            itemResponses.add(itemResponse);
+        }
+
+        response.setItems(itemResponses);
 
         return response;
     }

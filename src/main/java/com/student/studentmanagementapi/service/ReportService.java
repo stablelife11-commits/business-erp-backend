@@ -2,6 +2,7 @@ package com.student.studentmanagementapi.service;
 
 
 import com.student.studentmanagementapi.dto.ReportResponse;
+import com.student.studentmanagementapi.entity.PurchaseItem;
 import com.student.studentmanagementapi.repository.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import com.student.studentmanagementapi.entity.Sale;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import com.student.studentmanagementapi.dto.CustomerReportResponse;
 
 import com.student.studentmanagementapi.dto.PurchaseReportResponse;
 import com.student.studentmanagementapi.entity.Purchase;
@@ -26,7 +28,9 @@ import com.student.studentmanagementapi.dto.TopSellingProductResponse;
 import com.student.studentmanagementapi.dto.TopCustomerResponse;
 import com.student.studentmanagementapi.dto.MonthlyPurchaseResponse;
 import com.student.studentmanagementapi.dto.TopSupplierResponse;
-
+import com.student.studentmanagementapi.dto.PurchaseResponse;
+import com.student.studentmanagementapi.dto.PurchaseItemResponse;
+import com.student.studentmanagementapi.dto.SupplierReportResponse;
 @Service
 public class ReportService {
 
@@ -73,7 +77,40 @@ public class ReportService {
 
         PurchaseReportResponse response = new PurchaseReportResponse();
 
-        response.setPurchases(purchases);
+        List<PurchaseResponse> purchaseResponses = new ArrayList<>();
+
+        for (Purchase purchase : purchases) {
+
+            PurchaseResponse purchaseResponse = new PurchaseResponse();
+
+            purchaseResponse.setId(purchase.getId());
+            purchaseResponse.setPurchaseNumber(purchase.getPurchaseNumber());
+            purchaseResponse.setPurchaseDate(purchase.getPurchaseDate());
+            purchaseResponse.setSupplierName(purchase.getSupplier().getSupplierName());
+            purchaseResponse.setInvoiceNumber(purchase.getInvoiceNumber());
+            purchaseResponse.setTotalAmount(purchase.getTotalAmount());
+            purchaseResponse.setStatus(purchase.getStatus());
+
+            List<PurchaseItemResponse> itemResponses = new ArrayList<>();
+
+            for (PurchaseItem item : purchase.getItems()) {
+
+                PurchaseItemResponse itemResponse = new PurchaseItemResponse();
+
+                itemResponse.setProductName(item.getProduct().getProductName());
+                itemResponse.setQuantity(item.getQuantity());
+                itemResponse.setPurchasePrice(item.getPurchasePrice());
+                itemResponse.setTotalPrice(item.getTotalPrice());
+
+                itemResponses.add(itemResponse);
+            }
+
+            purchaseResponse.setItems(itemResponses);
+
+            purchaseResponses.add(purchaseResponse);
+        }
+
+        response.setPurchases(purchaseResponses);
 
         response.setTotalBills(purchases.size());
 
@@ -84,10 +121,14 @@ public class ReportService {
 
             totalPurchase += purchase.getTotalAmount();
 
-            purchase.getItems().forEach(item ->
-                    response.setTotalQuantity(response.getTotalQuantity() + item.getQuantity()));
+            if (purchase.getItems() != null) {
+                for (var item : purchase.getItems()) {
+                    totalQuantity += item.getQuantity();
+                }
+            }
         }
 
+        response.setTotalQuantity(totalQuantity);
         response.setTotalPurchase(totalPurchase);
 
         return response;
@@ -232,6 +273,67 @@ public class ReportService {
 
             item.setSupplierName((String) row[0]);
             item.setTotalPurchase(((Number) row[1]).doubleValue());
+
+            response.add(item);
+        }
+
+        return response;
+    }
+
+    public List<CustomerReportResponse> getCustomerReport() {
+
+        List<Object[]> data = saleRepository.getCustomerReport();
+
+        List<CustomerReportResponse> response = new ArrayList<>();
+
+        for (Object[] row : data) {
+
+            CustomerReportResponse item = new CustomerReportResponse();
+
+            item.setCustomerName((String) row[0]);
+            item.setCustomerMobile((String) row[1]);
+            item.setTotalBills(((Number) row[2]).longValue());
+            item.setTotalQuantity(((Number) row[3]).longValue());
+            item.setTotalSales((BigDecimal) row[4]);
+
+            response.add(item);
+        }
+
+        return response;
+    }
+    public List<SupplierReportResponse> getSupplierReport() {
+
+        List<Object[]> data = purchaseRepository.getSupplierPurchaseSummary();
+
+        List<Object[]> quantityData =
+                purchaseRepository.getSupplierTotalQuantity();
+
+        List<SupplierReportResponse> response = new ArrayList<>();
+
+        for (Object[] row : data) {
+
+            SupplierReportResponse item = new SupplierReportResponse();
+
+            String supplierName = (String) row[0];
+
+            item.setSupplierName(supplierName);
+            item.setTotalBills(((Number) row[1]).longValue());
+            item.setTotalPurchase(((Number) row[2]).doubleValue());
+
+            // Find quantity for this supplier
+            for (Object[] quantityRow : quantityData) {
+
+                String quantitySupplierName = (String) quantityRow[0];
+
+                if (supplierName.equals(quantitySupplierName)) {
+
+                    item.setTotalQuantity(
+                            ((Number) quantityRow[1]).intValue()
+                    );
+
+                    break;
+                }
+            }
 
             response.add(item);
         }

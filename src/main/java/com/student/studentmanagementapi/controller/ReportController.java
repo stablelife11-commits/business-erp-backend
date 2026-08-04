@@ -1,21 +1,14 @@
 package com.student.studentmanagementapi.controller;
 
-import com.student.studentmanagementapi.dto.ProfitReportResponse;
-import com.student.studentmanagementapi.dto.PurchaseReportResponse;
+import com.student.studentmanagementapi.dto.*;
 
-import com.student.studentmanagementapi.dto.ReportResponse;
 import com.student.studentmanagementapi.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.time.LocalDate;
-import com.student.studentmanagementapi.dto.StockReportResponse;
-import com.student.studentmanagementapi.dto.MonthlySalesResponse;
-import com.student.studentmanagementapi.dto.TopSellingProductResponse;
-import com.student.studentmanagementapi.dto.TopCustomerResponse;
-import com.student.studentmanagementapi.dto.MonthlyPurchaseResponse;
-import com.student.studentmanagementapi.dto.TopSupplierResponse;
+import com.student.studentmanagementapi.dto.SupplierReportResponse;
 
 @RestController
 @RequestMapping("/api/reports")
@@ -69,6 +62,11 @@ public class ReportController {
 
         return reportService.getTopCustomers();
     }
+    @GetMapping("/customers")
+    public List<CustomerReportResponse> getCustomerReport() {
+
+        return reportService.getCustomerReport();
+    }
 
     @GetMapping("/monthly-purchases")
     public List<MonthlyPurchaseResponse> getMonthlyPurchaseReport() {
@@ -80,5 +78,10 @@ public class ReportController {
     public List<TopSupplierResponse> getTopSuppliers() {
 
         return reportService.getTopSuppliers();
+    }
+    @GetMapping("/suppliers")
+    public List<SupplierReportResponse> getSupplierReport() {
+
+        return reportService.getSupplierReport();
     }
 }
