@@ -1,8 +1,9 @@
 package com.student.studentmanagementapi.service;
 
 import com.student.studentmanagementapi.entity.Product;
-import com.student.studentmanagementapi.repository.ProductRepository;
 import com.student.studentmanagementapi.entity.Sale;
+import com.student.studentmanagementapi.entity.SaleItem;
+import com.student.studentmanagementapi.repository.ProductRepository;
 import com.student.studentmanagementapi.repository.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,58 +17,227 @@ public class SaleService {
 
     @Autowired
     private SaleRepository saleRepository;
+
     @Autowired
     private ProductRepository productRepository;
 
+
+    // ==========================================
+    // ADD SALE - MULTIPLE PRODUCTS
+    // ==========================================
+
     public Sale addSale(Sale sale) {
 
+        // ------------------------------------------
         // Generate Sale Number
-        Optional<Sale> lastSale = saleRepository.findTopByOrderByIdDesc();
+        // ------------------------------------------
+
+        Optional<Sale> lastSale =
+                saleRepository.findTopByOrderByIdDesc();
 
         if (lastSale.isPresent()) {
-            String lastNumber = lastSale.get().getSaleNumber();
-            int number = Integer.parseInt(lastNumber.substring(4));
-            sale.setSaleNumber(String.format("SAL-%06d", number + 1));
+
+            String lastNumber =
+                    lastSale.get().getSaleNumber();
+
+            int number =
+                    Integer.parseInt(lastNumber.substring(4));
+
+            sale.setSaleNumber(
+                    String.format("SAL-%06d", number + 1)
+            );
+
         } else {
+
             sale.setSaleNumber("SAL-000001");
         }
 
-        // Calculate Total Amount
-        BigDecimal total = sale.getPrice().multiply(BigDecimal.valueOf(sale.getQuantity()));
-        sale.setTotalAmount(total);
 
-        // Find Product
-        Product product = productRepository.findByProductNameContainingIgnoreCase(
-                        sale.getProductName()
-                ).stream().findFirst()
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+        // ------------------------------------------
+        // Validate Items
+        // ------------------------------------------
 
-// Update Stock (Negative Allowed)
-        product.setCurrentStock(
-                product.getCurrentStock() - sale.getQuantity()
-        );
+        if (sale.getItems() == null ||
+                sale.getItems().isEmpty()) {
 
-// Update Latest Sale Price
-        product.setSalePrice(sale.getPrice());
+            throw new RuntimeException(
+                    "Sale must contain at least one product"
+            );
+        }
 
-        productRepository.save(product);
+
+        // ------------------------------------------
+        // Calculate Invoice Total
+        // ------------------------------------------
+
+        BigDecimal grandTotal = BigDecimal.ZERO;
+
+
+        for (SaleItem item : sale.getItems()) {
+
+            // ------------------------------------------
+            // Validate Product
+            // ------------------------------------------
+
+            if (item.getProduct() == null ||
+                    item.getProduct().getId() == null) {
+
+                throw new RuntimeException(
+                        "Product is required for every sale item"
+                );
+            }
+
+
+            // ------------------------------------------
+            // Validate Quantity
+            // ------------------------------------------
+
+            if (item.getQuantity() == null ||
+                    item.getQuantity() <= 0) {
+
+                throw new RuntimeException(
+                        "Quantity must be greater than zero"
+                );
+            }
+
+
+            // ------------------------------------------
+            // Find Product
+            // ------------------------------------------
+
+            Product product =
+                    productRepository.findById(
+                            item.getProduct().getId()
+                    ).orElseThrow(() ->
+                            new RuntimeException(
+                                    "Product not found: "
+                                            + item.getProduct().getId()
+                            )
+                    );
+                    item.setProduct(product);
+
+
+            // ------------------------------------------
+            // Validate Sale Price
+            // ------------------------------------------
+
+            if (item.getSalePrice() == null ||
+                    item.getSalePrice().compareTo(BigDecimal.ZERO) < 0) {
+
+                throw new RuntimeException(
+                        "Sale price is required"
+                );
+            }
+
+
+            // ------------------------------------------
+            // Calculate Item Total
+            // ------------------------------------------
+
+            BigDecimal itemTotal =
+                    item.getSalePrice()
+                            .multiply(
+                                    BigDecimal.valueOf(
+                                            item.getQuantity()
+                                    )
+                            );
+
+            item.setTotalPrice(itemTotal);
+
+
+            // ------------------------------------------
+            // Set Sale Relationship
+            // ------------------------------------------
+
+            item.setSale(sale);
+
+
+            // ------------------------------------------
+            // Update Stock
+            // ------------------------------------------
+
+            product.setCurrentStock(
+                    product.getCurrentStock()
+                            - item.getQuantity()
+            );
+
+
+            // ------------------------------------------
+            // Update Latest Sale Price
+            // ------------------------------------------
+
+            product.setSalePrice(
+                    item.getSalePrice()
+            );
+
+
+            productRepository.save(product);
+
+
+            // ------------------------------------------
+            // Add To Grand Total
+            // ------------------------------------------
+
+            grandTotal =
+                    grandTotal.add(itemTotal);
+        }
+
+
+        // ------------------------------------------
+        // Set Invoice Total
+        // ------------------------------------------
+
+        sale.setTotalAmount(grandTotal);
+
+
+        // ------------------------------------------
+        // Save Sale + Sale Items
+        // CascadeType.ALL
+        // ------------------------------------------
 
         return saleRepository.save(sale);
     }
 
+
+    // ==========================================
+    // GET ALL SALES
+    // ==========================================
+
     public List<Sale> getAllSales() {
+
         return saleRepository.findAll();
     }
 
+
+    // ==========================================
+    // GET SALE BY ID
+    // ==========================================
+
     public Optional<Sale> getSaleById(Long id) {
+
         return saleRepository.findById(id);
     }
 
-    public Optional<Sale> getSaleBySaleNumber(String saleNumber) {
-        return saleRepository.findBySaleNumber(saleNumber);
+
+    // ==========================================
+    // GET SALE BY SALE NUMBER
+    // ==========================================
+
+    public Optional<Sale> getSaleBySaleNumber(
+            String saleNumber) {
+
+        return saleRepository.findBySaleNumber(
+                saleNumber
+        );
     }
 
+
+    // ==========================================
+    // DELETE SALE
+    // ==========================================
+
     public void deleteSale(Long id) {
+
         saleRepository.deleteById(id);
     }
 }

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "sales")
@@ -24,12 +26,6 @@ public class Sale {
     @Column(length = 10)
     private String customerMobile;
 
-    private String productName;
-
-    private Integer quantity;
-
-    private BigDecimal price;
-
     private BigDecimal totalAmount;
 
     private String paymentMode;
@@ -38,8 +34,26 @@ public class Sale {
 
     private LocalDateTime createdAt;
 
+
+    // ==========================================
+    // MULTIPLE SALE ITEMS
+    // ==========================================
+
+    @OneToMany(
+            mappedBy = "sale",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<SaleItem> items = new ArrayList<>();
+
+
+    // ==========================================
+    // PRE PERSIST
+    // ==========================================
+
     @PrePersist
     public void prePersist() {
+
         createdAt = LocalDateTime.now();
 
         if (saleDate == null) {
@@ -47,9 +61,21 @@ public class Sale {
         }
     }
 
-    // ==========================
-    // Getters and Setters
-    // ==========================
+
+    // ==========================================
+    // ADD ITEM
+    // ==========================================
+
+    public void addItem(SaleItem item) {
+
+        items.add(item);
+        item.setSale(this);
+    }
+
+
+    // ==========================================
+    // GETTERS & SETTERS
+    // ==========================================
 
     public Long getId() {
         return id;
@@ -91,30 +117,6 @@ public class Sale {
         this.customerMobile = customerMobile;
     }
 
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
     public BigDecimal getTotalAmount() {
         return totalAmount;
     }
@@ -145,5 +147,26 @@ public class Sale {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+
+    // ==========================================
+    // SALE ITEMS GETTER / SETTER
+    // ==========================================
+
+    public List<SaleItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<SaleItem> items) {
+
+        this.items = items;
+
+        if (items != null) {
+
+            for (SaleItem item : items) {
+                item.setSale(this);
+            }
+        }
     }
 }

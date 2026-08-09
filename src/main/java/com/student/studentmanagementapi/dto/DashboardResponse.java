@@ -14,6 +14,9 @@ public class DashboardResponse {
     private BigDecimal totalPurchaseAmount;
     private BigDecimal totalSaleAmount;
 
+    private Integer totalStockQuantity;
+    private BigDecimal totalStockValue;
+
     private BigDecimal todaySaleAmount;
     private BigDecimal todayPurchaseAmount;
 
@@ -120,4 +123,19 @@ public class DashboardResponse {
     public void setTodayPurchasesCount(long todayPurchasesCount) {
         this.todayPurchasesCount = todayPurchasesCount;
     }
+    public Integer getTotalStockQuantity() {
+    return totalStockQuantity;
+}
+
+public void setTotalStockQuantity(Integer totalStockQuantity) {
+    this.totalStockQuantity = totalStockQuantity;
+}
+
+public BigDecimal getTotalStockValue() {
+    return totalStockValue;
+}
+
+public void setTotalStockValue(BigDecimal totalStockValue) {
+    this.totalStockValue = totalStockValue;
+}
 }

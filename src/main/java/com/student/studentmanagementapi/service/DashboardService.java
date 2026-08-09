@@ -36,6 +36,15 @@ public class DashboardService {
         response.setTotalCustomers(customerRepository.count());
         response.setTotalSuppliers(supplierRepository.count());
         response.setTotalProducts(productRepository.count());
+
+response.setTotalStockQuantity(
+        productRepository.getTotalStockQuantity()
+);
+
+response.setTotalStockValue(
+        productRepository.getTotalStockValue()
+);
+
         long repoCount = purchaseRepository.count();
 
         System.out.println("===========");

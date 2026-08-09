@@ -2,6 +2,10 @@ package com.student.studentmanagementapi.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "sale_items")
 public class SaleItem {
@@ -10,10 +14,13 @@ public class SaleItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Sale
+    // Sale / Invoice
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
+
+    
 
     // Product
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,10 +31,15 @@ public class SaleItem {
     private Integer quantity;
 
     @Column(nullable = false)
-    private Double salePrice;
+    private BigDecimal salePrice;
 
     @Column(nullable = false)
-    private Double totalPrice;
+    private BigDecimal totalPrice;
+
+
+    // ==========================
+    // Getters and Setters
+    // ==========================
 
     public Long getId() {
         return id;
@@ -57,19 +69,19 @@ public class SaleItem {
         this.quantity = quantity;
     }
 
-    public Double getSalePrice() {
+    public BigDecimal getSalePrice() {
         return salePrice;
     }
 
-    public void setSalePrice(Double salePrice) {
+    public void setSalePrice(BigDecimal salePrice) {
         this.salePrice = salePrice;
     }
 
-    public Double getTotalPrice() {
+    public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Double totalPrice) {
+    public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
 }
