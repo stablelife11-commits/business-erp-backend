@@ -22,6 +22,11 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 
     Optional<Sale> findBySaleNumber(String saleNumber);
 
+    
+
+
+
+
 
     // =========================================================
     // TOTAL SALES
@@ -33,6 +38,23 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
         """)
     BigDecimal getTotalSaleAmount();
 
+    // =========================================================
+// CUSTOMER TOTAL SALES
+// =========================================================
+
+@Query("""
+    SELECT COALESCE(SUM(s.totalAmount), 0)
+    FROM Sale s
+    WHERE s.customerMobile = :mobile
+    """)
+BigDecimal getTotalSalesByCustomerMobile(
+        String mobile
+);
+// =========================================================
+// CUSTOMER SALES
+// =========================================================
+
+List<Sale> findByCustomerMobile(String customerMobile);
 
     // =========================================================
     // TODAY SALES COUNT
