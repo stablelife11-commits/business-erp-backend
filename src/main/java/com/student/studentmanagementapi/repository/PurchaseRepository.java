@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -65,4 +66,11 @@ JOIN p.items i
 GROUP BY p.supplier.supplierName
 """)
     List<Object[]> getSupplierTotalQuantity();
+
+    @Query("""
+SELECT COALESCE(SUM(p.totalAmount), 0)
+FROM Purchase p
+WHERE p.supplier.id = :supplierId
+""")
+BigDecimal getTotalPurchaseAmountBySupplier(Long supplierId);
 }
