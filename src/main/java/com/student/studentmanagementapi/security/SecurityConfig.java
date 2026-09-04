@@ -25,14 +25,32 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
+
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(auth -> auth
+
+                        // Login & Register
                         .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().permitAll()
+
+                        // Admin APIs
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Seller APIs
+                        .requestMatchers("/api/seller/**").hasRole("SELLER")
+
+                        // Customer APIs
+                        .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
+
+                        // बाकी सभी APIs फिलहाल authenticated users के लिए
+                        .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+
+                .addFilterBefore(
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }
@@ -45,6 +63,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {
+
         return configuration.getAuthenticationManager();
     }
 }
+
