@@ -5,21 +5,64 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    boolean existsByProductCode(String productCode);
+    // =========================
+    // Seller-wise Product Code
+    // =========================
 
-    Optional<Product> findByProductCode(String productCode);
+    boolean existsBySellerIdAndProductCode(
+            Long sellerId,
+            String productCode
+    );
 
-    List<Product> findByProductNameContainingIgnoreCase(String productName);
+    Optional<Product> findBySellerIdAndProductCode(
+            Long sellerId,
+            String productCode
+    );
 
-    List<Product> findByBrandContainingIgnoreCase(String brand);
+    // =========================
+    // Seller Products
+    // =========================
 
+    List<Product> findBySellerId(Long sellerId);
+
+    List<Product> findBySellerIdAndStatusTrue(Long sellerId);
+
+    // =========================
+    // Search - Seller Wise
+    // =========================
+
+    List<Product> findBySellerIdAndProductNameContainingIgnoreCase(
+            Long sellerId,
+            String productName
+    );
+
+    List<Product> findBySellerIdAndBrandContainingIgnoreCase(
+            Long sellerId,
+            String brand
+    );
+     
     List<Product> findByCurrentStockLessThanEqual(Integer stock);
+    List<Product> findBySellerIdAndCurrentStockLessThanEqual(
+            Long sellerId,
+            Integer stock
+    );
+
+    // =========================
+    // Buyer - Active Products
+    // =========================
+
+    List<Product> findByStatusTrue();
+
+    // =========================
+    // Dashboard
+    // =========================
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.currentStock <= 10")
     long getLowStockProducts();
@@ -28,5 +71,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Integer getTotalStockQuantity();
 
     @Query("SELECT COALESCE(SUM(p.currentStock * p.purchasePrice), 0) FROM Product p")
-    java.math.BigDecimal getTotalStockValue();
+    BigDecimal getTotalStockValue();
 }
