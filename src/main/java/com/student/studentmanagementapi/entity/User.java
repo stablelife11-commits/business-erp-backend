@@ -1,9 +1,12 @@
 package com.student.studentmanagementapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Getter
 @Setter
@@ -22,6 +25,7 @@ public class User {
 
     private String password;
 
+    @JsonIgnore
     private String role;
 
     private Boolean status;
