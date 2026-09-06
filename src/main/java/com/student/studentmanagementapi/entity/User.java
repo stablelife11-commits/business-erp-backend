@@ -1,6 +1,7 @@
 package com.student.studentmanagementapi.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 
@@ -10,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Getter
 @Setter
-
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "users")
 public class User {
